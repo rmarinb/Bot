@@ -23,7 +23,25 @@ config = {
 Metodo para realizar la llamada
 """
 def llamada(medicamento, cantidad, telefono):
-    
+        
+    # Download the helper library from https://www.twilio.com/docs/python/install
+    import  os
+    from twilio.rest import Client
+
+    # Set environment variables for your credentials
+    # Read more at http://twil.io/secure
+
+    account_sid = "AC58c72fb9cc90d1aed4c8f618d5c42b2e"
+    auth_token = "bf90502fa03b42bc6eb3b1b4d8e240e0"
+    client = Client(account_sid, auth_token)
+
+    call = client.calls.create(
+    url="http://demo.twilio.com/docs/voice.xml",
+    to="+34616716269",
+    from_="+13204094105"
+    )
+
+    print(call.sid)
 
     return 1
 
