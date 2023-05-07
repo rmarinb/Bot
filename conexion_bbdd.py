@@ -2,8 +2,10 @@
 Este es un módulo que proporciona conexión a la bbdd, lectura de los datos y llamada al teléfono
 """
 
-import  datetime 
+import  datetime
 import  mysql.connector
+import  speech_recognition as sr
+from twilio.rest import  Client
 
 # Obtener la hora actual en formato personalizado
 hora_actual = datetime.datetime.now().strftime("%H:%M")
@@ -26,8 +28,7 @@ config = {
 Este es un módulo que transcribe el audio de la llamada  
 """
 def transcribir_audio(audio):
-    import speech_recognition as sr
-
+    
     # Crear un objeto reconocedor
     recognizer = sr.Recognizer()
 
@@ -56,12 +57,10 @@ def transcribir_audio(audio):
 Metodo para realizar la llamada
 """
 
-def llamada(medicamento, cantidad, telefono):      
-    import  os
-    from twilio.rest import Client
+def llamada(medicamento, cantidad, telefono):          
+   
 
-    # Set environment variables for your credentials
-    
+    # Establece las variables necesarias para realizar la llamada    
     account_sid = "AC58c72fb9cc90d1aed4c8f618d5c42b2e"
     auth_token = "bf90502fa03b42bc6eb3b1b4d8e240e0"
     client = Client(account_sid, auth_token)
@@ -84,6 +83,7 @@ def llamada(medicamento, cantidad, telefono):
     with open('grabacion.wav', 'wb') as f:
         f.write(recording_content)
 
+    # Transcribimos la llamada realizada a un texto
     transcribir_audio(f)
 
     return 1
