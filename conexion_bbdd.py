@@ -1,9 +1,9 @@
 """
-Este es un módulo que proporciona conexión a la bbdd
+Este es un módulo que proporciona conexión a la bbdd, lectura de los datos y llamada al teléfono
 """
 
+import  datetime 
 import  mysql.connector
-import  datetime
 
 # Obtener la hora actual en formato personalizado
 hora_actual = datetime.datetime.now().strftime("%H:%M")
@@ -13,35 +13,78 @@ hora_actual = '10:30'
 print("La hora actual en formato personalizado es:", hora_actual)
 
 # Configuración de la conexión a la base de datos
+
 config = {
     'user': 'root',
     'password': 'root',
     'host': 'localhost',
     'database': 'crudnodejs'
 }
+
+
+"""
+Este es un módulo que transcribe el audio de la llamada  
+"""
+def transcribir_audio(audio):
+    import speech_recognition as sr
+
+    # Crear un objeto reconocedor
+    recognizer = sr.Recognizer()
+
+    # Especificar la ubicación del archivo WAV a transcribir
+    archivo_wav = "ruta_del_archivo.wav"
+
+    # Abrir el archivo WAV
+    with sr.AudioFile(archivo_wav) as source:
+        # Leer el audio del archivo
+        audio = recognizer.record(source)
+
+        try:
+            # Realizar la transcripción utilizando el servicio de reconocimiento de voz de Google
+            texto_transcrito = recognizer.recognize_google(audio, language="es")
+
+            # Imprimir el texto transcrito
+            print("Texto transcrito: ", texto_transcrito)
+        except sr.UnknownValueError:
+            print("No se pudo transcribir el audio")
+        except sr.RequestError as e:
+            print("Error en la solicitud al servicio de reconocimiento de voz: ", str(e))
+
+    return 1
+
 """
 Metodo para realizar la llamada
 """
-def llamada(medicamento, cantidad, telefono):
-        
-    # Download the helper library from https://www.twilio.com/docs/python/install
+
+def llamada(medicamento, cantidad, telefono):      
     import  os
     from twilio.rest import Client
 
     # Set environment variables for your credentials
-    # Read more at http://twil.io/secure
-
+    
     account_sid = "AC58c72fb9cc90d1aed4c8f618d5c42b2e"
     auth_token = "bf90502fa03b42bc6eb3b1b4d8e240e0"
     client = Client(account_sid, auth_token)
 
     call = client.calls.create(
-    url="http://demo.twilio.com/docs/voice.xml",
-    to="+34616716269",
-    from_="+13204094105"
+        twiml='<Response><Say>Hola, esta es una llamada de prueba de Twilio de Rosana.</Say></Response>',
+        url="http://demo.twilio.com/docs/voice.xml",
+        to="+34616716269",
+        from_="+13204094105"
     )
 
     print(call.sid)
+
+    # Obtener el enlace al archivo de grabación de la llamada
+    recording_url = call.recording_url
+
+    # Descargar y guardar el archivo de grabación
+    recording = client.recordings(call.recording_sid).fetch()
+    recording_content = recording.content
+    with open('grabacion.wav', 'wb') as f:
+        f.write(recording_content)
+
+    transcribir_audio(f)
 
     return 1
 
@@ -67,7 +110,7 @@ def datos_hora(hora):
     print(medicamento[1])
     print(medicamento[2])
 
-    llamada(medicamento[0], medicamento[1], medicamento[2])
+    # llamada(medicamento[0], medicamento[1], medicamento[2])
     return 1
 
 # Conexión a la base de datos
