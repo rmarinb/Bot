@@ -17,7 +17,7 @@ print("La hora actual en formato personalizado es:", hora_actual)
 # Configuración de la conexión a la base de datos
 
 config = {
-    'user': 'root',
+    'user': 'root2',
     'password': 'root',
     'host': 'localhost',
     'database': 'crudnodejs'
