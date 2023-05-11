@@ -5,7 +5,7 @@ Este es un módulo que proporciona conexión a la bbdd, lectura de los datos y l
 import  datetime
 import  mysql.connector
 import  speech_recognition as sr
-from twilio.rest import  Client
+from    twilio.rest import  Client
 
 # Obtener la hora actual en formato personalizado
 hora_actual = datetime.datetime.now().strftime("%H:%M")
@@ -25,15 +25,19 @@ config = {
 
 
 """
-Este es un módulo que transcribe el audio de la llamada  
+Este es un módulo que transcribe el audio de la llamada a una variable texto_transcrito  
 """
 def transcribir_audio(audio):
     
+    print('Entra en transcribir audio')
+
     # Crear un objeto reconocedor
     recognizer = sr.Recognizer()
 
     # Especificar la ubicación del archivo WAV a transcribir
     archivo_wav = "ruta_del_archivo.wav"
+
+    print('Tenemos el nombre del archivo')
 
     # Abrir el archivo WAV
     with sr.AudioFile(archivo_wav) as source:
@@ -49,7 +53,9 @@ def transcribir_audio(audio):
         except sr.UnknownValueError:
             print("No se pudo transcribir el audio")
         except sr.RequestError as e:
-            print("Error en la solicitud al servicio de reconocimiento de voz: ", str(e))
+            print("Error en la solicitud al servicio de reconocimiento de voz:   ", str(e))
+
+    print('Termina el transcribir')
 
     return 1
 
@@ -59,6 +65,7 @@ Metodo para realizar la llamada
 
 def llamada(medicamento, cantidad, telefono):          
    
+    print('Entra en llamada')
 
     # Establece las variables necesarias para realizar la llamada    
     account_sid = "AC58c72fb9cc90d1aed4c8f618d5c42b2e"
@@ -66,13 +73,14 @@ def llamada(medicamento, cantidad, telefono):
     client = Client(account_sid, auth_token)
 
     call = client.calls.create(
-        twiml='<Response><Say>Hola, esta es una llamada de prueba de Twilio de Rosana.</Say></Response>',
+        twiml='<Response><Say>Hola, ¿se ha tomado el ' + medicamento + '? .</Say></Response>',
         url="http://demo.twilio.com/docs/voice.xml",
         to="+34616716269",
         from_="+13204094105"
     )
 
     print(call.sid)
+    print('Ha llamado')
 
     # Obtener el enlace al archivo de grabación de la llamada
     recording_url = call.recording_url
@@ -82,6 +90,7 @@ def llamada(medicamento, cantidad, telefono):
     recording_content = recording.content
     with open('grabacion.wav', 'wb') as f:
         f.write(recording_content)
+    print('Descarga la llamada')
 
     # Transcribimos la llamada realizada a un texto
     transcribir_audio(f)
@@ -89,9 +98,10 @@ def llamada(medicamento, cantidad, telefono):
     return 1
 
 """
-Metodo para realizar la búsqueda de los datos de la medicación y luego llamar
+Metodo para realizar la búsqueda de los datos de la medicación 
 """
 def datos_hora(hora):
+    
     print("Las dos horas son IGUALES")
     print(hora)
     hora='10:30'
@@ -110,7 +120,7 @@ def datos_hora(hora):
     print(medicamento[1])
     print(medicamento[2])
 
-    # llamada(medicamento[0], medicamento[1], medicamento[2])
+    llamada(medicamento[0], medicamento[1], medicamento[2])
     return 1
 
 # Conexión a la base de datos
@@ -123,9 +133,7 @@ cursor.execute(query)
 
 # Recuperación de los resultados de la consulta
 for resultado in cursor:
-
-    # print("La hora de la tabla es:" , resultado)
-    
+       
     # Convertimos la tupla en el mismo formato que la hora actual 
     hora_resultado = datetime.datetime.strptime(resultado[0], "%H:%M").time()
     hora_resultado2 = hora_resultado.strftime("%H:%M")
