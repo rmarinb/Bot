@@ -8,17 +8,17 @@ Este es un módulo que llama por TELEFONO
 """
 Este es un módulo que transcribe el audio de la llamada a una variable texto_transcrito  
 """
-def transcribir_audio(audio):
+def transcribir_audio():
     
-    print('Entra en transcribir audio')
+    print('Entra en transcribir audio. Sin parametros.')
 
     # Crear un objeto reconocedor
     recognizer = sr.Recognizer()
 
     # Especificar la ubicación del archivo WAV a transcribir
-    archivo_wav = "ruta_del_archivo.wav"
+    archivo_wav = recording_content
 
-    print('Tenemos el nombre del archivo')
+    print('Tenemos el nombre y la ubicacion del archivo')
 
     # Abrir el archivo WAV
     with sr.AudioFile(archivo_wav) as source:
@@ -54,9 +54,7 @@ def llamar(medicamento, cantidad, telefono):
     client = Client(account_sid, auth_token)
 
     call = client.calls.create(
-        # twiml='<Response><Say>Hola, ¿se ha tomado el ' + medicamento + '? .</Say></Response>',
-        twiml='<Response><Say>Voz de la llamada de Rosana</Say></Response>',
-        url="http://demo.twilio.com/docs/voice.xml",
+        twiml='<Response><Say>Hola, ¿se ha tomado el ' + medicamento + '? .</Say></Response>',        
         to="+34616716269",
         from_="+13204094105"
     )
@@ -77,12 +75,13 @@ def llamar(medicamento, cantidad, telefono):
             recording_content = recording.content
             with open('grabacion.wav', 'wb') as f:
                 f.write(recording_content)
-            print('Descarga la llamada')
+            print('Descargada la llamada en ', recording_content)
         else: 
             print("No hay grabación de la llamada")
             return  0
 
     else:
-        print("La llamada no ha finalizado")
+        print("La llamada no ha finalizado. No ha entrado en la generación de la grabación. ")
+        return -1
      
     return 1
