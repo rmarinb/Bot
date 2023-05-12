@@ -46,14 +46,14 @@ def principal(hora):
     # Realizamos la llamada
     resul = c.llamar(medicamento[0], medicamento[1], medicamento[2])
 
-    if resul == 1:
-        print("La llamada se ha realizado correctamente.")        
-    else:
+    if resul == -1:
         print("Ha habido un error realizando  la llamada.")
         return -1
+    else:
+        print("La llamada ha ido OK")
 
     # Transcribimos la llamada realizada a un texto
-    resul = c.transcribir_audio()
+    resul = c.transcribir_audio(resul)
 
     if resul == 1:
         print("La llamada se ha transcrito correctamente")              
