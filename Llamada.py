@@ -1,7 +1,7 @@
+import  time
 import  speech_recognition as sr
 from    twilio.rest import  Client
-from twilio.rest.resources import Call
-import  time
+
 
 """
 Este es un módulo que llama por TELEFONO
@@ -53,10 +53,11 @@ def llamar(medicamento, cantidad, telefono):
     # Establece las variables necesarias para realizar la llamada    
     account_sid = "AC58c72fb9cc90d1aed4c8f618d5c42b2e"
     auth_token = "bf90502fa03b42bc6eb3b1b4d8e240e0"
+
     client = Client(account_sid, auth_token)
 
     call = client.calls.create(
-        twiml='<Response><Say>Hola, ¿se ha tomado el ' + medicamento + '? .</Say></Response>',        
+        twiml='<Response><Gather action="/process-response" method="POST" timeout="10"><Say>Hola, ¿se ha tomado el ' + medicamento + '? .</Say></Gather></Response>',
         to="+34616716269",
         from_="+13204094105"
     )
