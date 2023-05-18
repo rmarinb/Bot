@@ -4,7 +4,7 @@ from    twilio.rest import  Client
 
 
 """
-Este es un módulo que llama por TELEFONO
+Este es un módulo que llama por TELEFONO y TRANSCRIBE LA LLAMADA
 """
 
 """
@@ -35,8 +35,8 @@ def transcribir_audio(audio):
             print("Texto transcrito: ", texto_transcrito)
         except sr.UnknownValueError:
             print("No se pudo transcribir el audio")
-        except sr.RequestError as e:
-            print("Error en la solicitud al servicio de reconocimiento de voz:   ", str(e))
+        except sr.RequestError as erro:
+            print("Error en la solicitud al servicio de reconocimiento de voz:   ", str(erro))
 
     print('Termina el transcribir')
 
@@ -57,11 +57,12 @@ def llamar(medicamento, cantidad, telefono):
     client = Client(account_sid, auth_token)
 
     call = client.calls.create(
-        twiml='<Response><Gather action="/process-response" method="POST" timeout="10"><Say>Hola, ¿se ha tomado el ' + medicamento + '? .</Say></Gather></Response>',
+        twiml='<Response><Gather action="/process-response" method="POST" timeout="10"><Say language="es-ES">Hola, ¿se ha tomado el ' + medicamento + '? .</Say></Gather></Response>',
         to="+34616716269",
-        from_="+13204094105"
+        from_="+13204094105",   
+        record=True
     )
-
+    
     print('Esta llamando. Identificador:', call.sid)
 
     # Hasta que el usuario cuelgue, vamos a ir comprobando el estado, para luego procesar el audio.
@@ -76,34 +77,29 @@ def llamar(medicamento, cantidad, telefono):
         if cont > 100:
             break
         
-        time.sleep(0.5)    
-    
-        if call.status == 'completed':
-            print("La llamada ha finalizado")
-            recordings = call.recordings.list()
-            if len(recordings) > 0:
-                recording_url = recordings[0].uri
-                print("URL del archivo de audio:", recording_url)
+        time.sleep(0.5)   
 
-                # Obtener el enlace al archivo de grabación de la llamada
-                recording_url = call.recording_url
-                
-                # Descargar y guardar el archivo de grabación
-                recording = client.recordings(call.recording_sid).fetch()
-                recording_content = recording.content
-                with open('grabacion.wav', 'wb') as f:
-                    f.write(recording_content)
-                print('Descargada la llamada en ', recording_content)
+        call_details = client.calls(call.sid).fetch()
+        
+        if call_details.status == 'completed':
+            
+            print("La llamada ha finalizado. Se va a intentar descargar la llamada en un archivo de audio.")
 
-                return recording_content
-            else: 
-                print("No hay grabación de la llamada")
-                return  -1
-        elif call.status == 'in-progress':
+            #tts_recordings = client.transcriptions.list(call_details.sid, "text")
+
+            tts_recordings = client.transcriptions.list()
+
+            # Acceder a las grabaciones de texto a voz
+            for tts_recording in tts_recordings:
+                print("Grabación de texto a voz SID: ", tts_recording.sid)
+                print("Texto de la grabación de texto a voz:", tts_recording.transcription_text)
+            return 1 
+        elif call_details.status == 'in-progress':
                 print("La llamada está en progreso.")
-        elif call.status == 'queued':
+        elif call_details.status == 'queued':
                 print("La llamada está en cola.")
         else:
             print("La llamada ha fallado o sido cancelada") 
 
     return -1
+
