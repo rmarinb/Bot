@@ -85,14 +85,18 @@ def llamar(medicamento, cantidad, telefono):
             
             print("La llamada ha finalizado. Se va a intentar descargar la llamada en un archivo de audio.")
 
-            #tts_recordings = client.transcriptions.list(call_details.sid, "text")
+            tts_recordings = client.transcriptions.list(call_details.sid, "text")
 
-            tts_recordings = client.transcriptions.list()
+            #tts_recordings = client.transcriptions.list()
+
+            tamaño = len(tts_recordings)
+            print("El tamaño de la lista es:", tamaño)
 
             # Acceder a las grabaciones de texto a voz
             for tts_recording in tts_recordings:
                 print("Grabación de texto a voz SID: ", tts_recording.sid)
                 print("Texto de la grabación de texto a voz:", tts_recording.transcription_text)
+
             return 1 
         elif call_details.status == 'in-progress':
                 print("La llamada está en progreso.")
