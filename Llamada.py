@@ -1,4 +1,5 @@
 import  time
+import requests
 import  speech_recognition as sr
 from    twilio.rest import  Client
 
@@ -79,25 +80,22 @@ def llamar(medicamento, cantidad, telefono):
         
         time.sleep(0.5)   
 
-        call_details = client.calls(call.sid).fetch()
-        
+        call_details = client.calls(call.sid).fetch()        
         if call_details.status == 'completed':
+       
+            print("Se va a intentar descargar la llamada en un archivo de audio.") 
             
-            print("La llamada ha finalizado. Se va a intentar descargar la llamada en un archivo de audio.")
+            recordings = client.recordings.list()
 
-            tts_recordings = client.transcriptions.list(call_details.sid, "text")
+            for recording in recordings:
+                recording_sid = recording.sid
+                recording_url = recording.uri.replace('.json', '.mp3')
+                response = client.request('GET', recording_url)
+                with open(f'{recording_sid}.mp3', 'wb') as file:
+                    file.write(response.content)
 
-            #tts_recordings = client.transcriptions.list()
-
-            tamaño = len(tts_recordings)
-            print("El tamaño de la lista es:", tamaño)
-
-            # Acceder a las grabaciones de texto a voz
-            for tts_recording in tts_recordings:
-                print("Grabación de texto a voz SID: ", tts_recording.sid)
-                print("Texto de la grabación de texto a voz:", tts_recording.transcription_text)
-
-            return 1 
+            return 1
+        
         elif call_details.status == 'in-progress':
                 print("La llamada está en progreso.")
         elif call_details.status == 'queued':
