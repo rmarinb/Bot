@@ -5,14 +5,12 @@ Este es un módulo PRINCIPAL que proporciona conexión a la bbdd y lectura de lo
 import  datetime
 import  mysql.connector
 import  Llamada as c
+import  pln as p 
 import  Log as l
 
 # Obtener la hora actual en formato personalizado
 hora_actual = datetime.datetime.now().strftime("%H:%M")
 hora_actual = '10:30' #forzamos la hora para pruebas
-
-# Imprimir la hora actual en formato personalizado
-print("La hora actual en formato personalizado es:", hora_actual)
 
 # Configuración de la conexión a la base de datos
 config = {
@@ -25,9 +23,7 @@ config = {
 """
 Metodo para realizar la búsqueda de los datos de la medicación 
 """
-def principal(hora):
-    
-    print("Las dos horas son IGUALES")       
+def principal(hora):              
 
     # Conexión a la base de datos para obtener los datos de la prescripción
     cnx = mysql.connector.connect(**config)
@@ -50,20 +46,25 @@ def principal(hora):
         print("Ha habido un error realizando  la llamada.")
         l.log("Error", id_Dosis, usuario, cnx)
         return -1
-    else:
-        print("La llamada ha ido OK")
-        l.log("OK", id_Dosis, usuario, cnx)
+        
+    # l.log("OK", id_Dosis, usuario, cnx)
 
-    # Transcribimos la llamada realizada a un texto
-    # resul_escritura = c.transcribir_audio(resul)
+    # Transcribimos la llamada realizada a un texto    
+    resul_escritura = c.transcribir_audio(resul)
 
-    # if resul_escritura == 1:
-        # print("La llamada se ha transcrito correctamente")              
-    #else:
-        #print("Ha habido un error transcribiendo la llamada")
-        #return -1
+    if resul_escritura == -1:
+        print("Ha habido un error transcribiendo la llamada. Se desconoce el error")
+        return -1
+    
+    print("La llamada se ha transcrito correctamente, con retorno: ", resul_escritura)                      
 
-    #return 1
+    #Como se ha transcrito la llamada, vamos a procesar el lenguaje natural buscando un afirmativo
+    resul_pln = p.procesa_pln(resul_escritura);
+
+    if resul_pln == -1:
+        print("Ha habido un error en el PLN del texto de la trascripción")
+    
+    return 1
 
 # **************************************************************************************************************************************
 # EJECUCION PRINCIPAL ******************************************************************************************************************
@@ -85,14 +86,9 @@ for resultado in cursor:
     usuario         = resultado[1]
     id_Dosis        = resultado[2]
 
-    # Imprimir la hora como objeto datetime.time
-    print("La hora como objeto datetime.time es:", hora_resultado2)
-    print("El usuario es: ", usuario)
-
+    # Imprimir la hora como objeto datetime.time    
     if hora_resultado2 == hora_actual:        
         principal(hora_actual)
-    else:
-        print("No ha dosis a la hora ", hora_actual)
     
 # Cierre de la conexión de base de datos
 cursor.close()
