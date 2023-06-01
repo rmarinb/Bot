@@ -6,8 +6,8 @@ Este es un módulo que guarda el LOG De las llamadas
 
 def log(resultado, dosis, usuario, cnx):
 
-    hora_actual = datetime.datetime.now().strftime("%H:%M")
-
+    hora_actual = datetime.datetime.now() 
+    
     # Crear un cursor para ejecutar consultas
     cursor = cnx.cursor()
 
@@ -21,21 +21,22 @@ def log(resultado, dosis, usuario, cnx):
     clave = id_log[0] + 1
 
     # Sentencia SQL de inserción
-    sql = "INSERT INTO log (ID_Log, fecha, resultado, id_dosis, id_usuario) VALUES (%s, %s, %s, %s, %s)"
-
+    sql = "INSERT INTO log (ID_Log, fecha, resultado, id_dosis, id_usuario) VALUES (%s, %s, %s, %s, %s)"    
+   
     # Valores a insertar
     valores = (clave, hora_actual, resultado, dosis, usuario)
-    print("Estoy intentando meter los valores: ", clave)
-    print("fecha", hora_actual)
-    print("resultado", resultado)
-    print("dosis", dosis)
-    print("usuario", usuario)
-
+    
     # Ejecutar la sentencia SQL con los valores
-    cursor.execute(sql, valores)
+    cursor.execute(sql, valores)    
 
     # Confirmar los cambios en la base de datos
     cnx.commit()
+
+    # Comprobación de que la ejecución ha ido bien
+    if cursor.rowcount > 0:
+        print("Inserción exitosa")
+    else:
+        print("No se pudo realizar la inserción")
 
     # Cerrar el cursor y la conexión
     cursor.close()

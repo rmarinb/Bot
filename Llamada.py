@@ -36,8 +36,7 @@ def transcribir_audio(audio_completo):
         audio = recognizer.record(source)
         try:
             # Realizar la transcripción utilizando el servicio de reconocimiento de voz de Google
-            texto_transcrito = recognizer.recognize_google(audio, show_all=True, language="es")
-            # Imprimir el texto transcrito completo             
+            texto_transcrito = recognizer.recognize_google(audio, show_all=True, language="es")            
             return texto_transcrito
         except sr.UnknownValueError:
             print("No se pudo transcribir el audio. Desconocemos el error. ")

@@ -1,32 +1,31 @@
+from unidecode import unidecode
+
 """
 Este es un módulo que procesa el texto trascrito e intenta determinar qué ha dicho el paciente 
 """
 
 def procesa_pln(texto):
 
-    # Primero convertimos el diccionario en textos independientes en los que vamos a buscar un 'SI'
-    for valor in texto.items():
-        print("El valor es:", valor)    
+    print(texto)
 
-    var = ('alternative', [{'transcript': 'el ibuprofeno', 'confidence': 0.96330917}, {'transcript': 'ibuprofeno'}, {'transcript': 'el ibuprofeno si'}, {'transcript': 'el ibuprofeno sí'}])
+    # cogemos la parte de texto alternativo, porque el principal no detecta lo último dicho 
+    var = texto['alternative']         
 
-    segundo_elemento = var[1]
-    print(segundo_elemento)
-    # [{'transcript': 'el ibuprofeno', 'confidence': 0.96330917},
-    #  {'transcript': 'ibuprofeno'},
-    #  {'transcript': 'el ibuprofeno si'},
-    #  {'transcript': 'el ibuprofeno sí'}]
+    # de todas las transcripciones alternativas, me quedo con la última    
+    tamano = len(var)   
+    txt = var[tamano-1]
 
-    mi_variable = "1234567890"
+    # de la última me quedo con la parte transcrita
+    texto = txt['transcript']
+    
+    # de la parte transcrita me quedo con los dos últimos caracteres    
+    tamano = len(texto)
+    txt = texto[-2:]
+    
+    # si el texto es un si, en mayusculas o minúsculas, con o sin acento
+    if unidecode(txt.lower()) == "si":        
+        return 1
+    else:
+        return 0
 
-    ultimos_cinco_digitos = mi_variable[-5:]
-
-    print(ultimos_cinco_digitos)  # Imprime "56789"
-
-    print("esta es mi lista")
-    for txt in segundo_elemento:
-        print(txt)
-        txt_recortado = txt[-5]
-        print("los ultimos cinco digitos son: ", txt_recortado)
-
-    return  1
+    return  -1

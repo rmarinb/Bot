@@ -7,6 +7,7 @@ import  mysql.connector
 import  Llamada as c
 import  pln as p 
 import  Log as l
+import  whatsap as w
 
 # Obtener la hora actual en formato personalizado
 hora_actual = datetime.datetime.now().strftime("%H:%M")
@@ -29,40 +30,39 @@ def principal(hora):
     cnx = mysql.connector.connect(**config)
 
     cursor = cnx.cursor()          
-    cursor.execute("SELECT m.Nombre_Comun, Cantidad, Telefono FROM crudnodejs.dosis d, crudnodejs.medicamentos m, crudnodejs.usuarios u WHERE d.ID_Medicamento = m.ID_Medicamento AND u.ID = 1 AND u.ID = d.ID_Usuario AND Hora = %s", (hora,))
+    cursor.execute("SELECT m.Nombre_Comun, Cantidad, Telefono, d.id_dosis FROM crudnodejs.dosis d, crudnodejs.medicamentos m, crudnodejs.usuarios u WHERE d.ID_Medicamento = m.ID_Medicamento AND u.ID = 1 AND u.ID = d.ID_Usuario AND Hora = %s", (hora,))
                    
     # Obtener el resultado de la consulta
     medicamento = cursor.fetchone()
-
-    # Imprimir el resultado
-    print("Nombre comun", medicamento[0]) 
-    print("Cantidad", medicamento[1]) 
-    print("Telefono", medicamento[2]) 
-
+    
     # Realizamos la llamada
     resul = c.llamar(medicamento[0], medicamento[1], medicamento[2])
 
     if resul == -1:
         print("Ha habido un error realizando  la llamada.")
         l.log("Error", id_Dosis, usuario, cnx)
-        return -1
-        
-    # l.log("OK", id_Dosis, usuario, cnx)
-
+        return -1    
+    
     # Transcribimos la llamada realizada a un texto    
     resul_escritura = c.transcribir_audio(resul)
 
     if resul_escritura == -1:
         print("Ha habido un error transcribiendo la llamada. Se desconoce el error")
         return -1
-    
-    print("La llamada se ha transcrito correctamente, con retorno: ", resul_escritura)                      
 
     #Como se ha transcrito la llamada, vamos a procesar el lenguaje natural buscando un afirmativo
     resul_pln = p.procesa_pln(resul_escritura);
 
     if resul_pln == -1:
-        print("Ha habido un error en el PLN del texto de la trascripción")
+        print("Ha habido un error en el PLN del texto de la trascripción.")
+    elif resul_pln == 0:
+        print("El paciente no se ha tomado la medicación.")
+        l.log("ERROR", medicamento[3], 1, cnx)
+        w.envio_mensaje(1, cnx)
+    elif resul_pln == 1:
+        print("El paciente se ha tomado la medicacion.")
+        l.log("OK", medicamento[3], 1, cnx)
+        w.envio_mensaje(1, cnx)
     
     return 1
 
