@@ -40,7 +40,7 @@ def principal(hora):
 
     if resul == -1:
         print("Ha habido un error realizando  la llamada.")
-        l.log("Error", id_Dosis, usuario, cnx)
+        l.log("Error llamada", id_Dosis, usuario, cnx)
         return -1    
     
     # Transcribimos la llamada realizada a un texto    
@@ -48,6 +48,7 @@ def principal(hora):
 
     if resul_escritura == -1:
         print("Ha habido un error transcribiendo la llamada. Se desconoce el error")
+        l.log("Error transc", id_Dosis, usuario, cnx)
         return -1
 
     #Como se ha transcrito la llamada, vamos a procesar el lenguaje natural buscando un afirmativo
@@ -55,14 +56,14 @@ def principal(hora):
 
     if resul_pln == -1:
         print("Ha habido un error en el PLN del texto de la trascripción.")
+        l.log("Error proces", id_Dosis, usuario, cnx)
     elif resul_pln == 0:
         print("El paciente no se ha tomado la medicación.") 
         l.log("ERROR", medicamento[3], 1, cnx)
         w.envio_mensaje(1, cnx)
     elif resul_pln == 1:
         print("El paciente se ha tomado la medicacion.")
-        l.log("OK", medicamento[3], 1, cnx)
-        w.envio_mensaje(1, cnx)
+        l.log("OK", medicamento[3], 1, cnx)        
     
     return 1
 

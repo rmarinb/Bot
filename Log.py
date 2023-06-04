@@ -33,10 +33,8 @@ def log(resultado, dosis, usuario, cnx):
     cnx.commit()
 
     # Comprobación de que la ejecución ha ido bien
-    if cursor.rowcount > 0:
-        print("Inserción exitosa")
-    else:
-        print("No se pudo realizar la inserción")
+    if cursor.rowcount <= 0:        
+        print("No se pudo realizar la inserción en el LOG")
 
     # Cerrar el cursor y la conexión
     cursor.close()
