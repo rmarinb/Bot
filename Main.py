@@ -56,7 +56,7 @@ def principal(hora):
     if resul_pln == -1:
         print("Ha habido un error en el PLN del texto de la trascripción.")
     elif resul_pln == 0:
-        print("El paciente no se ha tomado la medicación.")
+        print("El paciente no se ha tomado la medicación.") 
         l.log("ERROR", medicamento[3], 1, cnx)
         w.envio_mensaje(1, cnx)
     elif resul_pln == 1:
