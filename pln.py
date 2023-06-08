@@ -6,8 +6,6 @@ Este es un módulo que procesa el texto trascrito e intenta determinar qué ha d
 
 def procesa_pln(texto):
 
-    print(texto)
-
     # cogemos la parte de texto alternativo, porque el principal no detecta lo último dicho 
     var = texto['alternative']         
 

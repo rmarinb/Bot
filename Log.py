@@ -17,7 +17,6 @@ def log(resultado, dosis, usuario, cnx):
     # Obtener el resultado de la consulta
     id_log = cursor.fetchone()
     
-    print("Identificador Log máximo que hay", id_log[0]) 
     clave = id_log[0] + 1
 
     # Sentencia SQL de inserción
