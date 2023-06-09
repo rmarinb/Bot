@@ -52,8 +52,9 @@ def llamar(medicamento, cantidad, telefono):
 
     # Establece las variables necesarias para realizar la llamada 
     # Estos datos son propios de mi usuario de twilio    
-    account_sid = "AC58c72fb9cc90d1aed4c8f618d5c42b2e"
-    auth_token = "bf90502fa03b42bc6eb3b1b4d8e240e0"
+    # Con estos datos no funciona, pues no son los reales: 
+    account_sid = "1"
+    auth_token = "1"
 
     client = Client(account_sid, auth_token)
 
